@@ -1,8 +1,8 @@
 const KEY = "openclaw.control.settings.v1";
 
 import { isSupportedLocale } from "../i18n/index.ts";
-import { inferBasePathFromPathname, normalizeBasePath } from "./navigation.ts";
 import type { ThemeMode } from "./theme.ts";
+import { getOpenClawWsUrl } from "./ws-url.ts";
 
 export type UiSettings = {
   gatewayUrl: string;
@@ -19,17 +19,7 @@ export type UiSettings = {
 };
 
 export function loadSettings(): UiSettings {
-  const defaultUrl = (() => {
-    const proto = location.protocol === "https:" ? "wss" : "ws";
-    const configured =
-      typeof window !== "undefined" &&
-      typeof window.__OPENCLAW_CONTROL_UI_BASE_PATH__ === "string" &&
-      window.__OPENCLAW_CONTROL_UI_BASE_PATH__.trim();
-    const basePath = configured
-      ? normalizeBasePath(configured)
-      : inferBasePathFromPathname(location.pathname);
-    return `${proto}://${location.host}${basePath}`;
-  })();
+  const defaultUrl = getOpenClawWsUrl();
 
   const defaults: UiSettings = {
     gatewayUrl: defaultUrl,

@@ -36,20 +36,19 @@ describe("loadSettings default gateway URL derivation", () => {
     vi.unstubAllGlobals();
   });
 
-  it("uses configured base path and normalizes trailing slash", async () => {
+  it("defaults to same-origin /openclaw/ws when no env is set", async () => {
     vi.stubGlobal("location", {
       protocol: "https:",
       host: "gateway.example:8443",
       pathname: "/ignored/path",
     } as Location);
-    vi.stubGlobal("window", { __OPENCLAW_CONTROL_UI_BASE_PATH__: " /openclaw/ " } as Window &
-      typeof globalThis);
+    vi.stubGlobal("window", {} as Window & typeof globalThis);
 
     const { loadSettings } = await import("./storage.ts");
-    expect(loadSettings().gatewayUrl).toBe("wss://gateway.example:8443/openclaw");
+    expect(loadSettings().gatewayUrl).toBe("wss://gateway.example:8443/openclaw/ws");
   });
 
-  it("infers base path from nested pathname when configured base path is not set", async () => {
+  it("uses same-origin /openclaw/ws from location when under nested path", async () => {
     vi.stubGlobal("location", {
       protocol: "http:",
       host: "gateway.example:18789",
@@ -58,6 +57,6 @@ describe("loadSettings default gateway URL derivation", () => {
     vi.stubGlobal("window", {} as Window & typeof globalThis);
 
     const { loadSettings } = await import("./storage.ts");
-    expect(loadSettings().gatewayUrl).toBe("ws://gateway.example:18789/apps/openclaw");
+    expect(loadSettings().gatewayUrl).toBe("ws://gateway.example:18789/openclaw/ws");
   });
 });

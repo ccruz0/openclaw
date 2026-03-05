@@ -102,6 +102,8 @@ RUN for dir in /app/extensions /app/.agent /app/.agents; do \
 RUN pnpm build
 # Force pnpm for UI build (Bun may fail on ARM/Synology architectures)
 ENV OPENCLAW_PREFER_PNPM=1
+# Build UI for dashboard proxy at /openclaw/ (assets and routing under base path)
+ENV OPENCLAW_CONTROL_UI_BASE_PATH=/openclaw/
 RUN pnpm ui:build
 
 # Expose the CLI binary without requiring npm global writes as non-root.
